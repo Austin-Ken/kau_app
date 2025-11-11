@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart'; 
+import '../../controllers/profile_controller.dart'; // Import ProfileController
 import '../../models/product_model.dart'; 
 import '../../helpers/currency_formatter.dart'; 
 
@@ -36,6 +37,8 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final CartController cartController = Get.find<CartController>();
+    // Mendapatkan instance ProfileController
+    final ProfileController profileController = Get.find<ProfileController>(); 
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +47,8 @@ class CartPage extends StatelessWidget {
       ),
       body: Obx(
         () {
-          // --- KOREKSI: Akses langsung (tanpa .value) ---
+          // FIX: Menghapus `.value` dari cartController.cartItems dan totalCartPrice. 
+          // Di dalam Obx, GetX menyediakan getter untuk nilai reaktif secara otomatis.
           final List<CartItem> cartItems = cartController.cartItems;
           final double subtotal = cartController.totalCartPrice;
 
@@ -107,10 +111,9 @@ class CartPage extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              // item.quantity adalah RxInt, jadi kita bungkus lagi dalam Obx untuk perubahan kuantitas
+                              // `item.quantity.value` di sini tetap benar, karena `quantity` 
+                              // kemungkinan adalah RxInt/Rx<int> di dalam model CartItem
                               Obx(() => Text(
-                                // Menggunakan .value di sini karena item.quantity adalah RxInt, 
-                                // dan ini di dalam Obx lokal yang berbeda.
                                 'Subtotal: ${CurrencyFormatter.formatIDR(item.product.price * item.quantity.value)}', 
                                 style: TextStyle(
                                   color: Colors.grey[700], 
@@ -128,7 +131,6 @@ class CartPage extends StatelessWidget {
                                   cartController.decrementQuantity(item);
                                 },
                               ),
-                              // Menggunakan Obx untuk menampilkan kuantitas RxInt
                               Obx(() => Text(
                                 '${item.quantity.value}',
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -153,7 +155,7 @@ class CartPage extends StatelessWidget {
                   },
                 ),
               ),
-              _buildCheckoutSummary(context, subtotal), 
+              _buildCheckoutSummary(context, subtotal, cartController, profileController), 
             ],
           );
         },
@@ -161,7 +163,12 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckoutSummary(BuildContext context, double subtotal) {
+  Widget _buildCheckoutSummary(
+    BuildContext context, 
+    double subtotal, 
+    CartController cartController, 
+    ProfileController profileController, // Terima ProfileController
+  ) {
     const double deliveryFee = 15000;
     final double grandTotal = subtotal + deliveryFee;
 
@@ -197,7 +204,14 @@ class CartPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: subtotal > 0 ? () {
-                Get.snackbar('Checkout Berhasil', 'Pesanan dengan total ${CurrencyFormatter.formatIDR(grandTotal)} akan diproses.', snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+                // --- LOGIKA PEMBAYARAN MENGGUNAKAN SALDO ---
+                final bool success = profileController.payOrder(grandTotal);
+                
+                if (success) {
+                  // Jika pembayaran berhasil, kosongkan keranjang
+                  // CATATAN: Pastikan metode `clearCart()` telah didefinisikan di CartController Anda.
+                  cartController.clearCart(); 
+                }
               } : null, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

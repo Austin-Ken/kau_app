@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/profile_controller.dart'; 
+import '../../helpers/currency_formatter.dart'; // Asumsi Anda punya helper ini
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
 
   Widget _buildOrderStatusItem(IconData icon, String text, VoidCallback onTap) {
     return GestureDetector(
@@ -19,11 +21,20 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+  
+  // Instance Controller
+  final ProfileController profileController = Get.put(ProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        // Hanya tambahkan AppBar jika tidak digunakan di bottom navigation bar
+        toolbarHeight: 0,
+      ),
       body: ListView(
         children: [
+          // Bagian Profil & Avatar
           SizedBox(
             height: 110, 
             child: Row(
@@ -32,7 +43,7 @@ class ProfilePage extends StatelessWidget {
                 const Padding(padding: EdgeInsets.all(10.0)),
                 const CircleAvatar(
                   radius: 40,
-                  backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/7067/7067706.png'),
+                  backgroundImage: NetworkImage('https://cbx-prod.b-cdn.net/COLOURBOX25634105.jpg?width=800&height=800&quality=70'),
                 ),
                 const SizedBox(width: 20),
                 Expanded( 
@@ -42,16 +53,11 @@ class ProfilePage extends StatelessWidget {
                     children: const [
                       Text(
                         'Austin Keine Audranabel',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                        ),
-                      ),
-                      Text(
-                        'Member VIP',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
                         ),
                       ),
                     ],
@@ -69,6 +75,8 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
+          
+          // Bagian Pesanan Saya
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Padding(
@@ -119,7 +127,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ),
+          
           const SizedBox(height: 16),
+          
+          // Bagian Saldo (Sekarang Reaktif)
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Padding(
@@ -127,7 +138,7 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Saldo',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -138,13 +149,14 @@ class ProfilePage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Rp10.000',
-                        style: TextStyle(
+                      // --- MENGGUNAKAN OBX UNTUK SALDO REAKTIF ---
+                      Obx(() => Text(
+                        CurrencyFormatter.formatIDR(profileController.balance.value),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
-                      ),
+                      )),
                       ElevatedButton.icon(
                         onPressed: () {
                           Get.toNamed('/topup');

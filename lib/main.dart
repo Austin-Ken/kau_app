@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/splash', page: () => const SplashScreen()),
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/mainscreen', page: () => const MainScreen(), binding: MainBindings()),
-        GetPage(name: '/cart', page: () => const CartPage()),
+        GetPage(name: '/cart', page: () => CartPage()),
         GetPage(name: '/setting', page: () => const SettingPage()),
         GetPage(name: '/topup', page: () => const TopupPage()),
         GetPage(name: '/produk', page: () => const ProdukPage()),

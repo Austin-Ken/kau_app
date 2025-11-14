@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
                         color: Colors.grey,
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                         // Menggunakan Image.asset
                         child: Image.asset(
                           item,
@@ -202,7 +202,7 @@ class HomePage extends StatelessWidget {
                           Get.toNamed('/produk', arguments: data);
                         },
                         child: Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           elevation: 2,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,8 +210,8 @@ class HomePage extends StatelessWidget {
                               Expanded(
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(8),
-                                    topRight: Radius.circular(8),
+                                    topLeft: Radius.circular(12),
+                                    topRight: Radius.circular(12),
                                   ),
                                   // Menggunakan Image.network untuk gambar produk
                                   child: Image.network(

@@ -55,7 +55,7 @@ class SearchResultPage extends StatelessWidget {
                 Get.toNamed('/produk', arguments: product);
               },
               child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   elevation: 2,
                   child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,8 +63,8 @@ class SearchResultPage extends StatelessWidget {
                     Expanded(
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
                         ),
                         child: Image.network(
                           product.image,

@@ -63,7 +63,7 @@ class LoginPage extends StatelessWidget {
                           labelText: 'Username',
                           prefixIcon: const Icon(Icons.person, color: Colors.red),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
@@ -83,7 +83,7 @@ class LoginPage extends StatelessWidget {
                           labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock, color: Colors.red),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
@@ -110,7 +110,7 @@ class LoginPage extends StatelessWidget {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 5,
                       ),

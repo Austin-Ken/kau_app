@@ -28,7 +28,7 @@ class TopupPage extends StatelessWidget {
         ),
         backgroundColor: Colors.grey[200],
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: Colors.black12),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -114,7 +114,7 @@ class TopupPage extends StatelessWidget {
                 prefixText: 'Rp ',
                 hintText: ' Masukan Nominal',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
@@ -134,7 +134,7 @@ class TopupPage extends StatelessWidget {
                   backgroundColor: Colors.red,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: profileController.isLoading.value 

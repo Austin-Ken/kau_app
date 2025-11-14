@@ -81,7 +81,7 @@ class CartPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: ListTile(
                           leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                             child: Image.network(
                               item.product.image, 
                               width: 60,
@@ -217,7 +217,7 @@ class CartPage extends StatelessWidget {
                 backgroundColor: Colors.red,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: const Text('Bayar Sekarang', style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),

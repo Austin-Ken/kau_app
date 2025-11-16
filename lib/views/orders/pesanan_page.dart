@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kau_app/views/orders/completed_orders.dart';
-import 'package:kau_app/views/orders/packed_orders.dart';
-import 'package:kau_app/views/orders/shipped_orders.dart';
-import 'package:kau_app/views/orders/unpaid_orders.dart';
+import 'package:kau_app/views/orders/component/completed_orders.dart';
+import 'package:kau_app/views/orders/component/packed_orders.dart';
+import 'package:kau_app/views/orders/component/shipped_orders.dart';
 
 class PesananPage extends StatelessWidget {
   const PesananPage({super.key});
@@ -15,7 +14,7 @@ class PesananPage extends StatelessWidget {
 
     return DefaultTabController(
       initialIndex: initialIndex, 
-      length: 4, 
+      length: 3, 
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Pesanan Saya'),
@@ -24,7 +23,6 @@ class PesananPage extends StatelessWidget {
             labelColor: Colors.red,
             unselectedLabelColor: Colors.black,
             tabs: [
-              Tab(text: 'Belum Bayar'),
               Tab(text: 'Dikemas'),
               Tab(text: 'Dikirim'),
               Tab(text: 'Selesai'),
@@ -33,7 +31,6 @@ class PesananPage extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            UnpaidOrders(),
             PackedOrders(),
             ShippedOrders(),
             CompletedOrders(),

@@ -139,7 +139,6 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 children: <Widget>[
-                  _buildCategoryIcon(Icons.apps, 'Lainnya'),
                   _buildCategoryIcon(Icons.shopping_bag, 'Fashion'),
                   _buildCategoryIcon(Icons.phone_android, 'Elektronik'),
                   _buildCategoryIcon(Icons.food_bank, 'Makanan'),

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../helpers/currency_formatter.dart'; // Digunakan untuk notifikasi
+import '../../helpers/currency_formatter.dart'; 
 
 class ProfileController extends GetxController {
   // Saldo pengguna diinisialisasi sebagai RxDouble agar reaktif
-  final balance = 100000.0.obs; // Saldo awal yang lebih besar
-  final isLoading = false.obs; // Status loading untuk simulasi Top Up
+  final balance = 100000.0.obs; // Saldo awal
+  final isLoading = false.obs; // Status loading
 
   // Controller untuk input nominal top-up di halaman TopupPage
   final topupInputController = TextEditingController();
 
   // --- Helper: Membersihkan input string untuk diubah menjadi double ---
   double _cleanInput(String input) {
+    // Menghapus titik dan koma yang sering digunakan sebagai pemisah ribuan
     String cleanString = input.replaceAll('.', '').replaceAll(',', '');
     return double.tryParse(cleanString) ?? 0.0;
   }
@@ -51,7 +52,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  // --- Fungsi: Logika Pembayaran Pesanan ---
+  // --- Fungsi: Logika Pembayaran Pesanan (Menggunakan Saldo) ---
   bool payOrder(double grandTotal) {
     if (grandTotal <= 0) {
       Get.snackbar(
@@ -90,6 +91,18 @@ class ProfileController extends GetxController {
       );
       return false;
     }
+  }
+
+  // --- Fungsi: Logika Pembayaran Pesanan (Cash On Delivery/COD) ---
+  void processCOD(double totalAmount) {
+     Get.snackbar(
+        'Pembelian Berhasil!',
+        'Pesanan senilai ${CurrencyFormatter.formatIDR(totalAmount)} berhasil diproses dengan metode COD. Pesanan akan segera dikirim.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
   }
 
   @override

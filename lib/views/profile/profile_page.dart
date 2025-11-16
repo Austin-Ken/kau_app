@@ -117,10 +117,9 @@ class ProfilePage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildOrderStatusItem(Icons.payment, 'Belum Bayar', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 0})),
-                      _buildOrderStatusItem(Icons.inventory, 'Dikemas', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 1})),
-                      _buildOrderStatusItem(Icons.local_shipping, 'Dikirim', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 2})),
-                      _buildOrderStatusItem(Icons.check_circle, 'Selesai', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 3})),
+                      _buildOrderStatusItem(Icons.inventory, 'Dikemas', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 0})),
+                      _buildOrderStatusItem(Icons.local_shipping, 'Dikirim', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 1})),
+                      _buildOrderStatusItem(Icons.check_circle, 'Selesai', () => Get.toNamed('/pesanan', arguments: {'initialIndex': 2})),
                     ],
                   ),
                 ],

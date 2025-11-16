@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart'; 
-import '../../controllers/profile_controller.dart'; // Import ProfileController
+import '../../controllers/profile_controller.dart'; 
+import '../../controllers/order_controller.dart'; // IMPORT BARU
 import '../../models/product_model.dart'; 
 import '../../helpers/currency_formatter.dart'; 
+import '../../models/order_model.dart'; // IMPORT BARU untuk OrderStatus
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
+  // --- Widget Helper: Baris Ringkasan ---
   Widget _buildSummaryRow(String title, String value, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -34,11 +37,123 @@ class CartPage extends StatelessWidget {
     );
   }
 
+  // --- FUNGSI: Dialog Pemilihan Metode Pembayaran ---
+  void _showPaymentMethodDialog(
+    BuildContext context, 
+    double totalAmount, 
+    CartController cartController, 
+    ProfileController profileController,
+    OrderController orderController, // TAMBAH PARAMETER
+  ) {
+    
+    final formattedPrice = CurrencyFormatter.formatIDR(totalAmount);
+    
+    Get.defaultDialog(
+      title: "Pilih Metode Pembayaran",
+      titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      radius: 12,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      content: Obx(() {
+        final formattedBalance = CurrencyFormatter.formatIDR(profileController.balance.value);
+        final isSaldoEnough = profileController.balance.value >= totalAmount;
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Detail Harga Total
+            Text('Total Belanja: $formattedPrice', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red)),
+            const Divider(),
+            
+            // Tampilan Saldo
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Saldo Anda Saat Ini:', style: TextStyle(fontSize: 14)),
+                Text(formattedBalance, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green)),
+              ],
+            ),
+            const SizedBox(height: 15),
+
+            // Opsi 1: Bayar menggunakan Saldo
+            ElevatedButton(
+              onPressed: !isSaldoEnough ? null : () async {
+                Get.back(); // Tutup dialog sebelum proses
+
+                await Future.delayed(const Duration(milliseconds: 300)); 
+                final bool success = profileController.payOrder(totalAmount);
+                
+                if (success) {
+                  // LOGIKA BARU: Tambahkan pesanan dan navigasi
+                  orderController.addOrder(
+                    cartController.cartItems.toList(), // Salin item keranjang
+                    totalAmount, 
+                    "Saldo"
+                  );
+                  cartController.clearCart(); 
+                  Get.offNamed('/pesanan', arguments: {'initialIndex': 0}); // Navigasi ke Dikemas
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isSaldoEnough ? Colors.blue : Colors.grey,
+                minimumSize: const Size(double.infinity, 45),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: Text(
+                isSaldoEnough ? 'Bayar Pakai Saldo' : 'Saldo Tidak Cukup',
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+              ),
+            ),
+            if (!isSaldoEnough) 
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  'Anda kekurangan ${CurrencyFormatter.formatIDR(totalAmount - profileController.balance.value)}', 
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ),
+
+            const SizedBox(height: 10),
+
+            // Opsi 2: Cash On Delivery (COD)
+            ElevatedButton(
+              onPressed: () async {
+                Get.back(); // Tutup dialog
+                await Future.delayed(const Duration(milliseconds: 300)); 
+
+                profileController.processCOD(totalAmount);
+                
+                // LOGIKA BARU: Tambahkan pesanan dan navigasi
+                orderController.addOrder(
+                  cartController.cartItems.toList(), 
+                  totalAmount, 
+                  "COD"
+                );
+                cartController.clearCart();
+                Get.offNamed('/pesanan', arguments: {'initialIndex': 0}); // Navigasi ke Dikemas
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                minimumSize: const Size(double.infinity, 45),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text(
+                'Cash On Delivery (COD)',
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+  // --- END FUNGSI Dialog ---
+
   @override
   Widget build(BuildContext context) {
     final CartController cartController = Get.find<CartController>();
-    // Mendapatkan instance ProfileController
     final ProfileController profileController = Get.find<ProfileController>(); 
+    final OrderController orderController = Get.find<OrderController>(); // Cari OrderController
 
     return Scaffold(
       appBar: AppBar(
@@ -47,8 +162,6 @@ class CartPage extends StatelessWidget {
       ),
       body: Obx(
         () {
-          // FIX: Menghapus `.value` dari cartController.cartItems dan totalCartPrice. 
-          // Di dalam Obx, GetX menyediakan getter untuk nilai reaktif secara otomatis.
           final List<CartItem> cartItems = cartController.cartItems;
           final double subtotal = cartController.totalCartPrice;
 
@@ -111,8 +224,6 @@ class CartPage extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              // `item.quantity.value` di sini tetap benar, karena `quantity` 
-                              // kemungkinan adalah RxInt/Rx<int> di dalam model CartItem
                               Obx(() => Text(
                                 'Subtotal: ${CurrencyFormatter.formatIDR(item.product.price * item.quantity.value)}', 
                                 style: TextStyle(
@@ -155,7 +266,7 @@ class CartPage extends StatelessWidget {
                   },
                 ),
               ),
-              _buildCheckoutSummary(context, subtotal, cartController, profileController), 
+              _buildCheckoutSummary(context, subtotal, cartController, profileController, orderController), 
             ],
           );
         },
@@ -163,11 +274,13 @@ class CartPage extends StatelessWidget {
     );
   }
 
+  // --- Widget: Ringkasan Checkout ---
   Widget _buildCheckoutSummary(
     BuildContext context, 
     double subtotal, 
     CartController cartController, 
-    ProfileController profileController, // Terima ProfileController
+    ProfileController profileController, 
+    OrderController orderController, // TAMBAH PARAMETER
   ) {
     const double deliveryFee = 15000;
     final double grandTotal = subtotal + deliveryFee;
@@ -204,14 +317,14 @@ class CartPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: subtotal > 0 ? () {
-                // --- LOGIKA PEMBAYARAN MENGGUNAKAN SALDO ---
-                final bool success = profileController.payOrder(grandTotal);
-                
-                if (success) {
-                  // Jika pembayaran berhasil, kosongkan keranjang
-                  // CATATAN: Pastikan metode `clearCart()` telah didefinisikan di CartController Anda.
-                  cartController.clearCart(); 
-                }
+                // PANGGIL DIALOG DENGAN OrderController
+                _showPaymentMethodDialog(
+                  context, 
+                  grandTotal, 
+                  cartController, 
+                  profileController,
+                  orderController,
+                );
               } : null, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

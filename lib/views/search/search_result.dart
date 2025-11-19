@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/produk_controller.dart';
 import 'package:kau_app/models/product_model.dart'; 
-import 'package:kau_app/helpers/currency_formatter.dart'; // Import Formatter yang baru
+import 'package:kau_app/helpers/currency_formatter.dart';
 
 
 class SearchResultPage extends StatelessWidget {
@@ -10,27 +10,16 @@ class SearchResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Diasumsikan ProdukController sudah diinisialisasi
     final ProdukController produkController = Get.find();
 
-    // Mengambil query pencarian yang dikirim dari halaman sebelumnya
     final String confirmedQuery = Get.arguments as String? ?? '';
 
-    // Memicu filter produk segera setelah frame pertama dibangun
-    // Ini memastikan filter berjalan hanya sekali ketika halaman dimuat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (confirmedQuery.isNotEmpty) {
-        // Panggil filterProduk, yang akan memperbarui filteredProdukList
         produkController.filterProduk(confirmedQuery);
       }
     });
     
-    // Perhatian: searchResults di sini mengambil List yang TIDAK reaktif 
-    // pada saat build dipanggil (hanya sekali). 
-    // GridView di bawah dibungkus dengan Obx untuk memantau perubahan pada filteredProdukList.
-    // Jika Anda ingin menggunakan variabel lokal ini di luar Obx, Anda harus mengambilnya dari controller.
-    // Mari kita gunakan Obx untuk mengakses list yang reaktif.
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Hasil untuk "$confirmedQuery"'),
@@ -39,15 +28,12 @@ class SearchResultPage extends StatelessWidget {
         elevation: 0.5,
       ),
       body: Obx(() {
-        // Gunakan list reaktif dari controller
         final List<ProductModel> searchResults = produkController.filteredProdukList;
 
         if (produkController.isLoading.isTrue && searchResults.isEmpty) {
-          // Tampilkan loading jika sedang memuat dan belum ada hasil
           return const Center(child: CircularProgressIndicator(color: Colors.red));
         }
         if (searchResults.isEmpty) {
-          // Tampilkan pesan jika tidak ada hasil
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -66,7 +52,6 @@ class SearchResultPage extends StatelessWidget {
             ),
           );
         }
-        // Tampilkan hasil pencarian dalam GridView
         return GridView.builder(
           padding: const EdgeInsets.all(12),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -80,7 +65,6 @@ class SearchResultPage extends StatelessWidget {
             final ProductModel product = searchResults[index];
             return GestureDetector(
               onTap: () {
-                // Navigasi ke halaman produk dengan detail produk
                 Get.toNamed('/produk', arguments: product);
               },
               child: Card(
@@ -124,16 +108,13 @@ class SearchResultPage extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          // --- PERBAIKAN FORMATTER HARGA ---
                           Text(
                             CurrencyFormatter.formatIDR(product.price),
-                            // Sebelum: 'Rp${product.price.toStringAsFixed(0)}',
                             style: const TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          // ---------------------------------
                           Row(
                             children: [
                               const Icon(Icons.star, color: Colors.amber, size: 14),

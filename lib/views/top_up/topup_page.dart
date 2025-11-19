@@ -11,13 +11,11 @@ class TopupPage extends StatelessWidget {
     final ProfileController profileController = Get.find<ProfileController>();
 
     Widget buildAmountChip(String amount) {
-      // Menghilangkan format Rupiah dan titik agar fungsi addBalance bisa memproses
       String cleanAmount = amount.replaceAll('.', ''); 
       double value = double.tryParse(cleanAmount) ?? 0.0;
 
       return ActionChip(
         onPressed: () {
-          // Panggil fungsi top up dengan string nominal yang bersih
           profileController.addBalance(cleanAmount);
         },
         label: Text(
@@ -44,7 +42,6 @@ class TopupPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Saldo Saat Ini
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -74,7 +71,6 @@ class TopupPage extends StatelessWidget {
             
             const SizedBox(height: 20,),
             
-            // Pilihan Nominal Chip
             const Text(
               'Pilih Nominal Top Up',
               style: TextStyle(
@@ -98,7 +94,6 @@ class TopupPage extends StatelessWidget {
             
             const SizedBox(height: 24,),
             
-            // Input Nominal Lain
             const Text(
               'Atau Masukan Nominal Lain',
               style: TextStyle(
@@ -122,12 +117,10 @@ class TopupPage extends StatelessWidget {
             
             const SizedBox(height: 24,),
             
-            // Tombol Top Up Sekarang (dengan Loading State)
             Obx(() => SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: profileController.isLoading.value ? null : () {
-                  // Panggil fungsi top up dengan string dari TextField
                   profileController.addBalance(profileController.topupInputController.text);
                 },
                 style: ElevatedButton.styleFrom(

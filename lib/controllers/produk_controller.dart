@@ -4,7 +4,7 @@ import '../models/product_model.dart';
 import 'dart:developer';
 
 class ProdukController extends GetxController {
-  final ApiService _apiService = ApiService(); 
+  final ApiService _apiService = Get.put(ApiService()); 
   
   final produkList = <ProductModel>[].obs;
   final filteredProdukList = <ProductModel>[].obs; 
@@ -34,7 +34,12 @@ class ProdukController extends GetxController {
     } catch (e) {
       log('API ERROR DETAIL: $e', name: 'ProdukController');
       
-      Get.snackbar("Error API", e.toString().contains('Status') ? e.toString() : "Tidak dapat terhubung ke server. Pastikan koneksi internet stabil.");
+      Get.snackbar(
+        "Error API", 
+        e.toString().contains('Status') || e.toString().contains('Gagal memuat') ? e.toString() : "Terjadi kesalahan saat memproses data produk.",
+        backgroundColor: Get.theme.snackBarTheme.backgroundColor,
+        colorText: Get.theme.snackBarTheme.actionTextColor,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -58,4 +63,13 @@ class ProdukController extends GetxController {
     filteredProdukList.assignAll(results);
   }
 
+  List<ProductModel> getProductsByCategory(String categoryId) {
+    if (categoryId.toLowerCase() == 'semua') {
+      return produkList;
+    }
+    
+    return produkList
+        .where((product) => product.category.toLowerCase() == categoryId.toLowerCase())
+        .toList();
+  }
 }

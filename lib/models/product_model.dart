@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:get/get.dart'; // Penting untuk RxInt di CartItem
+import 'package:get/get.dart';
 
-// --- JSON Helpers ---
 List<ProductModel> productModelListFromJson(String str) =>
     List<ProductModel>.from(json.decode(str).map((x) => ProductModel.fromJson(x)));
 
-// --- PRODUCT MODEL (Definisi Tunggal) ---
 class ProductModel {
   final int id;
   final String title;
@@ -28,7 +26,6 @@ class ProductModel {
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
         id: json["id"] as int,
         title: json["title"] as String,
-        // Konversi toDouble() dari tipe num (int atau double)
         price: (json["price"] as num).toDouble(), 
         description: json["description"] as String,
         category: json["category"] as String,
@@ -37,7 +34,6 @@ class ProductModel {
       );
 }
 
-// --- RATING MODEL ---
 class Rating {
   final double rate;
   final int count;
@@ -53,7 +49,6 @@ class Rating {
       );
 }
 
-// --- CART ITEM MODEL (Menggunakan ProductModel yang sudah benar) ---
 class CartItem {
   final ProductModel product;
   final RxInt quantity; 

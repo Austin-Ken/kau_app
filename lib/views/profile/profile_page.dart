@@ -34,7 +34,6 @@ class ProfilePage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // Bagian Profil & Avatar
           SizedBox(
             height: 110, 
             child: Row(
@@ -76,7 +75,6 @@ class ProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           
-          // Bagian Pesanan Saya
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Padding(

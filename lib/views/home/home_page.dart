@@ -3,34 +3,51 @@ import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kau_app/controllers/produk_controller.dart';
 import 'package:kau_app/data/app_data.dart';
-import 'package:kau_app/helpers/currency_formatter.dart'; // Import Formatter yang baru
+import 'package:kau_app/helpers/currency_formatter.dart'; 
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  Widget _buildCategoryIcon(IconData icon, String text) {
+  final List<Map<String, dynamic>> categories = const [
+    {'icon': Icons.shopping_bag, 'text': 'Fashion', 'id': 'fashion'}, 
+    {'icon': Icons.phone_android, 'text': 'Elektronik', 'id': 'electronics'},
+    {'icon': Icons.food_bank, 'text': 'Makanan', 'id': 'food'},
+    {'icon': Icons.sports_soccer, 'text': 'Olahraga', 'id': 'sports'},
+    {'icon': Icons.spa, 'text': 'Kecantikan', 'id': 'beauty'},
+    {'icon': Icons.home, 'text': 'Rumah Tangga', 'id': 'household'},
+  ];
+
+  Widget _buildCategoryIcon(IconData icon, String text, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.grey[200],
-            child: Icon(icon, size: 30, color: Colors.red),
-          ),
-          const SizedBox(height: 5),
-          Text(text, style: const TextStyle(fontSize: 12)),
-        ],
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.grey[200],
+              child: Icon(icon, size: 30, color: Colors.red),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              text, 
+              style: const TextStyle(fontSize: 12), 
+              textAlign: TextAlign.center,
+              maxLines: 1,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Memastikan controller sudah diinisialisasi atau dicari (diasumsikan sudah ada di Get.put/binding)
     final ProdukController produkController = Get.find<ProdukController>(); 
-
+    
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 65,
@@ -40,7 +57,6 @@ class HomePage extends StatelessWidget {
         title: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
-            // Navigasi ke halaman pencarian
             Get.toNamed('/search');
           },
           child: IgnorePointer(
@@ -67,7 +83,6 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // Navigasi ke halaman keranjang
               Get.toNamed('/cart');
             },
             icon: const Icon(Icons.shopping_cart_outlined),
@@ -77,14 +92,13 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Banner Carousel
             CarouselSlider(
               options: CarouselOptions(
                 height: 190.0,
                 autoPlay: true,
                 autoPlayInterval: const Duration(seconds: 8), 
                 viewportFraction: 1.0,
-                enlargeCenterPage: false, // Memastikan gambar mengisi penuh lebar
+                enlargeCenterPage: false,
               ),
               items: imgList.map((item) {
                 return Builder(
@@ -98,10 +112,10 @@ class HomePage extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        // Menggunakan Image.asset
                         child: Image.asset(
                           item,
                           fit: BoxFit.cover,
+                          width: double.infinity,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: Colors.grey.shade300,
@@ -118,7 +132,6 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Kategori Section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Align(
@@ -138,18 +151,24 @@ class HomePage extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                children: <Widget>[
-                  _buildCategoryIcon(Icons.shopping_bag, 'Fashion'),
-                  _buildCategoryIcon(Icons.phone_android, 'Elektronik'),
-                  _buildCategoryIcon(Icons.food_bank, 'Makanan'),
-                  _buildCategoryIcon(Icons.sports_soccer, 'Olahraga'),
-                  _buildCategoryIcon(Icons.spa, 'Kecantikan'),
-                  _buildCategoryIcon(Icons.home, 'Rumah Tangga'),
-                ],
+                children: categories.map((cat) {
+                  return _buildCategoryIcon(
+                    cat['icon'] as IconData,
+                    cat['text'] as String,
+                    () {
+                      Get.toNamed(
+                        '/category_result',
+                        arguments: {
+                          'category_id': cat['id'], 
+                          'category_name': cat['text'] 
+                        }
+                      );
+                    },
+                  );
+                }).toList(),
               ),
             ),
 
-            // Produk Section
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Align(
@@ -178,10 +197,10 @@ class HomePage extends StatelessWidget {
                   if (produkController.produkList.isEmpty) {
                       return const Center(
                        child: Padding(
-                          padding: EdgeInsets.all(32.0),
-                          child: Text("Tidak ada produk tersedia saat ini."),
-                        ),
-                      );
+                           padding: EdgeInsets.all(32.0),
+                           child: Text("Tidak ada produk tersedia saat ini."),
+                         ),
+                       );
                   }
                   return GridView.builder(
                     shrinkWrap: true,
@@ -197,7 +216,6 @@ class HomePage extends StatelessWidget {
                       final data = produkController.produkList[index];
                       return GestureDetector(
                         onTap: () {
-                          // Navigasi ke detail produk
                           Get.toNamed('/produk', arguments: data);
                         },
                         child: Card(
@@ -212,7 +230,6 @@ class HomePage extends StatelessWidget {
                                     topLeft: Radius.circular(12),
                                     topRight: Radius.circular(12),
                                   ),
-                                  // Menggunakan Image.network untuk gambar produk
                                   child: Image.network(
                                     data.image,
                                     fit: BoxFit.cover,
@@ -241,7 +258,6 @@ class HomePage extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 4),
-                                    // Menggunakan CurrencyFormatter
                                     Text(
                                       CurrencyFormatter.formatIDR(data.price),
                                       style: const TextStyle(

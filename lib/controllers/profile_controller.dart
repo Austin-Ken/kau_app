@@ -3,21 +3,16 @@ import 'package:get/get.dart';
 import '../../helpers/currency_formatter.dart'; 
 
 class ProfileController extends GetxController {
-  // Saldo pengguna diinisialisasi sebagai RxDouble agar reaktif
-  final balance = 100000.0.obs; // Saldo awal
-  final isLoading = false.obs; // Status loading
+  final balance = 100000.0.obs; 
+  final isLoading = false.obs; 
 
-  // Controller untuk input nominal top-up di halaman TopupPage
   final topupInputController = TextEditingController();
 
-  // --- Helper: Membersihkan input string untuk diubah menjadi double ---
   double _cleanInput(String input) {
-    // Menghapus titik dan koma yang sering digunakan sebagai pemisah ribuan
     String cleanString = input.replaceAll('.', '').replaceAll(',', '');
     return double.tryParse(cleanString) ?? 0.0;
   }
 
-  // --- Fungsi: Simulasi Top Up Saldo ---
   Future<void> addBalance(String amountString) async {
     final double amount = _cleanInput(amountString);
 
@@ -33,18 +28,16 @@ class ProfileController extends GetxController {
     }
 
     isLoading.value = true;
-    // Simulasi penundaan jaringan 2 detik
     await Future.delayed(const Duration(seconds: 2)); 
     
-    // Proses penambahan saldo
     balance.value += amount;
     
     isLoading.value = false;
     topupInputController.clear();
     
-    Get.back(); // Kembali ke halaman sebelumnya
+    Get.back();
     Get.snackbar(
-      'Top Up Berhasil 🎉',
+      'Top Up Berhasil',
       'Saldo berhasil ditambahkan sebesar ${CurrencyFormatter.formatIDR(amount)}. Saldo Anda: ${CurrencyFormatter.formatIDR(balance.value)}.',
       snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.green,
@@ -52,7 +45,6 @@ class ProfileController extends GetxController {
     );
   }
 
-  // --- Fungsi: Logika Pembayaran Pesanan (Menggunakan Saldo) ---
   bool payOrder(double grandTotal) {
     if (grandTotal <= 0) {
       Get.snackbar(
@@ -65,13 +57,11 @@ class ProfileController extends GetxController {
       return false;
     }
 
-    // Cek Saldo
     if (balance.value >= grandTotal) {
-      // Saldo Mencukupi: Kurangi saldo
       balance.value -= grandTotal;
       
       Get.snackbar(
-        'Pembayaran Berhasil! 💰',
+        'Pembayaran Berhasil!',
         'Total ${CurrencyFormatter.formatIDR(grandTotal)} telah dibayarkan. Sisa saldo Anda: ${CurrencyFormatter.formatIDR(balance.value)}.',
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.blue.shade700,
@@ -79,10 +69,9 @@ class ProfileController extends GetxController {
       );
       return true;
     } else {
-      // Saldo Kurang: Beri notifikasi
       final double shortfall = grandTotal - balance.value;
       Get.snackbar(
-        'Saldo Kurang ⚠️',
+        'Saldo Kurang',
         'Saldo Anda tidak mencukupi (${CurrencyFormatter.formatIDR(balance.value)}). Dibutuhkan ${CurrencyFormatter.formatIDR(shortfall)} lagi untuk membayar pesanan ini.',
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.yellow.shade700,
@@ -93,7 +82,6 @@ class ProfileController extends GetxController {
     }
   }
 
-  // --- Fungsi: Logika Pembayaran Pesanan (Cash On Delivery/COD) ---
   void processCOD(double totalAmount) {
      Get.snackbar(
         'Pembelian Berhasil!',

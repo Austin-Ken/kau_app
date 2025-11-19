@@ -3,26 +3,24 @@ import 'package:get/get.dart';
 import 'package:kau_app/models/product_model.dart'; 
 import '/controllers/cart_controller.dart'; 
 import '/controllers/profile_controller.dart'; 
-import '/controllers/order_controller.dart'; // <--- IMPORT BARU
-import '/models/order_model.dart'; // <--- IMPORT BARU
+import '/controllers/order_controller.dart';
+import '/models/order_model.dart';
 import '../../helpers/currency_formatter.dart'; 
 
 class ProdukPage extends StatelessWidget {
   const ProdukPage({super.key});
 
-  // FUNGSI INI DIBUTUHKAN UNTUK TOMBOL "BELI SEKARANG"
   void _showPaymentMethodDialog(
     BuildContext context, 
     ProductModel produk, 
     CartController cartController, 
     ProfileController profileController,
-    OrderController orderController, // <--- TAMBAH PARAMETER INI
+    OrderController orderController, 
   ) {
     
-    final double totalAmount = produk.price; // Harga produk = total pembelian tunggal
+    final double totalAmount = produk.price;
     final formattedPrice = CurrencyFormatter.formatIDR(totalAmount);
     
-    // Buat CartItem palsu untuk pesanan tunggal (quantity=1)
     final List<CartItem> singleProductList = [
       CartItem(product: produk, quantity: 1.obs)
     ];
@@ -40,13 +38,11 @@ class ProdukPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Detail Produk & Harga
             Text('Produk: ${produk.title}', style: TextStyle(fontSize: 15, color: Colors.grey[700])),
             const SizedBox(height: 4),
             Text('Harga Total: $formattedPrice', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red)),
             const Divider(),
             
-            // Tampilan Saldo
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -56,24 +52,20 @@ class ProdukPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Opsi 1: Bayar menggunakan Saldo
             ElevatedButton(
               onPressed: !isSaldoEnough ? null : () async {
-                Get.back(); // Tutup dialog sebelum proses
+                Get.back();
 
                 await Future.delayed(const Duration(milliseconds: 300)); // Simulasi jeda UI
                 final bool success = profileController.payOrder(totalAmount);
                 
                 if (success) {
-                  // --- LOGIKA PESANAN BARU (SALDO) ---
                   orderController.addOrder(
                     singleProductList, 
                     totalAmount, 
                     "Saldo"
                   );
-                  // Navigasi ke PesananPage, tab 'Dikemas' (index 0)
                   Get.offNamed('/pesanan', arguments: {'initialIndex': 0});
-                  // ------------------------------------
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -97,23 +89,19 @@ class ProdukPage extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // Opsi 2: Cash On Delivery (COD)
             ElevatedButton(
               onPressed: () async {
-                Get.back(); // Tutup dialog
+                Get.back();
                 await Future.delayed(const Duration(milliseconds: 300)); // Simulasi jeda UI
 
                 profileController.processCOD(totalAmount);
                 
-                // --- LOGIKA PESANAN BARU (COD) ---
                 orderController.addOrder(
                   singleProductList, 
                   totalAmount, 
                   "COD"
                 );
-                // Navigasi ke PesananPage, tab 'Dikemas' (index 0)
                 Get.offNamed('/pesanan', arguments: {'initialIndex': 0});
-                // ------------------------------------
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -133,7 +121,6 @@ class ProdukPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cari instance Controller
     final CartController cartController = Get.put(CartController());
     final ProfileController profileController = Get.put(ProfileController()); 
     final OrderController orderController = Get.put(OrderController()); // <--- AMBIL ORDER CONTROLLER
@@ -265,15 +252,13 @@ class ProdukPage extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  // AKSI TOMBOL BELI SEKARANG: Panggil dialog pembelian
                   onPressed: cartController.isLoading.isTrue ? null : (){
-                    // Panggil fungsi dialog baru dengan OrderController
                     _showPaymentMethodDialog(
                       context, 
                       produk, 
                       cartController, 
                       profileController,
-                      orderController // <--- PASS ORDER CONTROLLER
+                      orderController
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -295,7 +280,6 @@ class ProdukPage extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton.icon(
-                  // TOMBOL "KERANJANG" (ADD TO CART)
                   onPressed: cartController.isLoading.isTrue ? null : () {
                     cartController.addToCart(produk); 
                   }, 

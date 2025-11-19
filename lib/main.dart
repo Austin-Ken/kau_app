@@ -12,7 +12,7 @@ import 'views/top_up/topup_page.dart';
 import 'views/login/login_page.dart';
 import 'views/main_screen.dart';
 import 'views/cart/cart_page.dart';
-
+import 'views/search/category_result_page.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GetMaterialApp(
       title: 'Kau App',
       debugShowCheckedModeBanner: false,
@@ -42,6 +41,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/pesanan', page: () => const PesananPage()),
         GetPage(name: '/search', page: () => const SearchPage()),
         GetPage(name: '/search_result', page: () => const SearchResultPage()),
+        GetPage(name: '/category_result', page: () => const CategoryResultPage()),
       ],
     );
   }

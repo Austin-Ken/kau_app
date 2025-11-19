@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart'; 
 import '../../controllers/profile_controller.dart'; 
-import '../../controllers/order_controller.dart'; // IMPORT BARU
+import '../../controllers/order_controller.dart';
 import '../../models/product_model.dart'; 
 import '../../helpers/currency_formatter.dart'; 
-import '../../models/order_model.dart'; // IMPORT BARU untuk OrderStatus
+import '../../models/order_model.dart'; 
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
-  // --- Widget Helper: Baris Ringkasan ---
   Widget _buildSummaryRow(String title, String value, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -37,13 +36,12 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  // --- FUNGSI: Dialog Pemilihan Metode Pembayaran ---
   void _showPaymentMethodDialog(
     BuildContext context, 
     double totalAmount, 
     CartController cartController, 
     ProfileController profileController,
-    OrderController orderController, // TAMBAH PARAMETER
+    OrderController orderController,
   ) {
     
     final formattedPrice = CurrencyFormatter.formatIDR(totalAmount);
@@ -61,11 +59,8 @@ class CartPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Detail Harga Total
             Text('Total Belanja: $formattedPrice', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red)),
             const Divider(),
-            
-            // Tampilan Saldo
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -74,24 +69,21 @@ class CartPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-
-            // Opsi 1: Bayar menggunakan Saldo
             ElevatedButton(
               onPressed: !isSaldoEnough ? null : () async {
-                Get.back(); // Tutup dialog sebelum proses
-
+                Get.back();
+                
                 await Future.delayed(const Duration(milliseconds: 300)); 
                 final bool success = profileController.payOrder(totalAmount);
                 
                 if (success) {
-                  // LOGIKA BARU: Tambahkan pesanan dan navigasi
                   orderController.addOrder(
-                    cartController.cartItems.toList(), // Salin item keranjang
+                    cartController.cartItems.toList(),
                     totalAmount, 
                     "Saldo"
                   );
                   cartController.clearCart(); 
-                  Get.offNamed('/pesanan', arguments: {'initialIndex': 0}); // Navigasi ke Dikemas
+                  Get.offNamed('/pesanan', arguments: {'initialIndex': 0});
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -114,23 +106,20 @@ class CartPage extends StatelessWidget {
               ),
 
             const SizedBox(height: 10),
-
-            // Opsi 2: Cash On Delivery (COD)
             ElevatedButton(
               onPressed: () async {
-                Get.back(); // Tutup dialog
+                Get.back(); 
                 await Future.delayed(const Duration(milliseconds: 300)); 
 
                 profileController.processCOD(totalAmount);
                 
-                // LOGIKA BARU: Tambahkan pesanan dan navigasi
                 orderController.addOrder(
                   cartController.cartItems.toList(), 
                   totalAmount, 
                   "COD"
                 );
                 cartController.clearCart();
-                Get.offNamed('/pesanan', arguments: {'initialIndex': 0}); // Navigasi ke Dikemas
+                Get.offNamed('/pesanan', arguments: {'initialIndex': 0});
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -147,13 +136,12 @@ class CartPage extends StatelessWidget {
       }),
     );
   }
-  // --- END FUNGSI Dialog ---
 
   @override
   Widget build(BuildContext context) {
     final CartController cartController = Get.find<CartController>();
     final ProfileController profileController = Get.find<ProfileController>(); 
-    final OrderController orderController = Get.find<OrderController>(); // Cari OrderController
+    final OrderController orderController = Get.find<OrderController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -274,13 +262,12 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  // --- Widget: Ringkasan Checkout ---
   Widget _buildCheckoutSummary(
     BuildContext context, 
     double subtotal, 
     CartController cartController, 
     ProfileController profileController, 
-    OrderController orderController, // TAMBAH PARAMETER
+    OrderController orderController,
   ) {
     const double deliveryFee = 15000;
     final double grandTotal = subtotal + deliveryFee;
@@ -317,7 +304,6 @@ class CartPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: subtotal > 0 ? () {
-                // PANGGIL DIALOG DENGAN OrderController
                 _showPaymentMethodDialog(
                   context, 
                   grandTotal, 

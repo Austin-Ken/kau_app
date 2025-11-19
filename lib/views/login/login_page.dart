@@ -19,6 +19,20 @@ class LoginPage extends StatelessWidget {
             color: Colors.red, 
             height: screenHeight,
             width: double.infinity,
+            child: Column(
+              children: [
+                SizedBox(height: 120,),
+                Align(
+                  alignment: AlignmentGeometry.topCenter,
+                  child: Text('KAU APP',
+                  style: TextStyle(
+                    fontSize: 38,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white
+                  ),),
+                ),
+              ],
+            ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -133,20 +147,20 @@ class LoginPage extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: screenHeight * 0.15, 
-            left: 0,
-            right: 0,
-            child: const Text(
-              'KAU APP',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 38,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: screenHeight * 0.15, 
+          //   left: 0,
+          //   right: 0,
+          //   child: const Text(
+          //     'KAU APP',
+          //     textAlign: TextAlign.center,
+          //     style: TextStyle(
+          //       fontSize: 38,
+          //       fontWeight: FontWeight.w900,
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

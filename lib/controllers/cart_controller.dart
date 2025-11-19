@@ -60,7 +60,6 @@ class CartController extends GetxController {
   void clearCart() {
     cartItems.clear();
     
-    // Opsional: Beri notifikasi kalau keranjang bersih
     Get.snackbar(
       'Selesai', 
       'Keranjang telah dikosongkan setelah pembayaran.', 

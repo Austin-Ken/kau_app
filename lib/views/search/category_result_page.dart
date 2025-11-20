@@ -23,6 +23,7 @@ class CategoryResultPage extends StatelessWidget {
         final data = products[index];
         return GestureDetector(
           onTap: () {
+            Get.toNamed('/produk', arguments: data);
           },
           child: Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
